@@ -184,7 +184,7 @@ export default function PantallaDashboard() {
       {/* Encabezado */}
       <View style={estilos.encabezado}>
         <View>
-          <Text style={estilos.saludo}>👋 Hola,</Text>
+          <Text style={estilos.saludo}>Hola,</Text>
           <Text style={estilos.email} numberOfLines={1}>
             {usuario.email?.split('@')[0]}
           </Text>
@@ -197,7 +197,7 @@ export default function PantallaDashboard() {
           >
             {exportando
               ? <ActivityIndicator size="small" color="#4f46e5" />
-              : <Text style={estilos.textoBtnExportar}>📤 Exportar</Text>
+              : <Text style={estilos.textoBtnExportar}> Exportar</Text>
             }
           </TouchableOpacity>
           <TouchableOpacity style={estilos.btnSalir} onPress={cerrarSesion}>
@@ -226,13 +226,13 @@ export default function PantallaDashboard() {
 
         <View style={estilos.filaTarjetas}>
           <View style={[estilos.tarjetaMini, { backgroundColor: '#dcfce7' }]}>
-            <Text style={estilos.labelTarjetaMini}>📥 Ingresos</Text>
+            <Text style={estilos.labelTarjetaMini}> Ingresos</Text>
             <Text style={[estilos.montoTarjetaMini, { color: '#16a34a' }]}>
               ${totalIngresos.toFixed(2)}
             </Text>
           </View>
           <View style={[estilos.tarjetaMini, { backgroundColor: '#fee2e2' }]}>
-            <Text style={estilos.labelTarjetaMini}>📤 Gastos</Text>
+            <Text style={estilos.labelTarjetaMini}> Gastos</Text>
             <Text style={[estilos.montoTarjetaMini, { color: '#dc2626' }]}>
               ${totalGastos.toFixed(2)}
             </Text>
@@ -243,7 +243,7 @@ export default function PantallaDashboard() {
       {/* Saldo por cuentas */}
       {cuentas.length > 0 && (
         <View style={estilos.seccion}>
-          <Text style={estilos.tituloSeccion}>💳 Saldo por cuenta</Text>
+          <Text style={estilos.tituloSeccion}>Saldo por cuenta</Text>
           <ScrollView horizontal showsHorizontalScrollIndicator={false}>
             {cuentas.map(cuenta => {
               const saldo = calcularSaldoCuenta(cuenta.id);
@@ -267,7 +267,7 @@ export default function PantallaDashboard() {
       {/* Gráfica de barras */}
       {transacciones.length > 0 && (
         <View style={estilos.seccion}>
-          <Text style={estilos.tituloSeccion}>📊 Últimos 6 meses</Text>
+          <Text style={estilos.tituloSeccion}> Últimos 6 meses</Text>
           <View style={estilos.contenedorGrafica}>
             <BarChart
               data={{
@@ -292,7 +292,7 @@ export default function PantallaDashboard() {
       {/* Gráfica circular por categoría */}
       {torta.length > 0 && (
         <View style={estilos.seccion}>
-          <Text style={estilos.tituloSeccion}>🥧 Gastos por categoría</Text>
+          <Text style={estilos.tituloSeccion}> Gastos por categoría</Text>
           <View style={estilos.contenedorGrafica}>
             <PieChart
               data={torta}
@@ -311,7 +311,7 @@ export default function PantallaDashboard() {
       {/* Desglose por categoría */}
       {categorias.length > 0 && (
         <View style={estilos.seccion}>
-          <Text style={estilos.tituloSeccion}>📋 Desglose de gastos</Text>
+          <Text style={estilos.tituloSeccion}>Desglose de gastos</Text>
           {categorias.map(([nombre, monto], index) => {
             const porcentaje = totalGastos > 0
               ? ((monto / totalGastos) * 100).toFixed(1)
@@ -345,7 +345,7 @@ export default function PantallaDashboard() {
       {/* Estado vacío */}
       {transacciones.length === 0 && (
         <View style={estilos.vacio}>
-          <Text style={estilos.textoVacio}>📈</Text>
+          <Text style={estilos.textoVacio}></Text>
           <Text style={estilos.textoVacioSub}>Sin datos aún</Text>
           <Text style={estilos.textoVacioHint}>
             Agrega transacciones para ver tus estadísticas

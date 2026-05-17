@@ -9,6 +9,7 @@ import {
   actualizarPresupuesto, eliminarPresupuesto
 } from '../firebase/presupuestos';
 import { escucharTransacciones } from '../firebase/transacciones';
+import { validarMonto, mensajeErrorFirestore } from '../utils/errores';
 
 const CATEGORIAS_GASTO = [
   '🍔 Comida', '🚗 Transporte', '🏠 Hogar', '💊 Salud',
@@ -82,27 +83,28 @@ export default function PantallaPresupuestos() {
     setModalVisible(true);
   };
 
-  const manejarGuardar = async () => {
-    if (!limiteTexto || isNaN(limiteTexto) || parseFloat(limiteTexto) <= 0) {
-      Alert.alert('Error', 'Ingresa un límite válido mayor a 0');
-      return;
+const manejarGuardar = async () => {
+  const errorMonto = validarMonto(limiteTexto);
+  if (errorMonto) {
+    Alert.alert('Límite inválido', errorMonto);
+    return;
+  }
+  try {
+    setCargando(true);
+    if (editando) {
+      await actualizarPresupuesto(editando, limiteTexto);
+    } else {
+      await crearPresupuesto(usuario.uid, categoriaSeleccionada, limiteTexto);
     }
-    try {
-      setCargando(true);
-      if (editando) {
-        await actualizarPresupuesto(editando, limiteTexto);
-      } else {
-        await crearPresupuesto(usuario.uid, categoriaSeleccionada, limiteTexto);
-      }
-      setModalVisible(false);
-      setLimiteTexto('');
-      setEditando(null);
-    } catch (error) {
-      Alert.alert('Error', 'No se pudo guardar el presupuesto');
-    } finally {
-      setCargando(false);
-    }
-  };
+    setModalVisible(false);
+    setLimiteTexto('');
+    setEditando(null);
+  } catch (error) {
+    Alert.alert('Error', mensajeErrorFirestore(error));
+  } finally {
+    setCargando(false);
+  }
+};
 
   const manejarEliminar = (presupuesto) => {
     Alert.alert(
@@ -237,7 +239,7 @@ export default function PantallaPresupuestos() {
       {/* Lista */}
       {presupuestos.length === 0 ? (
         <View style={estilos.vacio}>
-          <Text style={estilos.textoVacio}>📊</Text>
+          <Text style={estilos.textoVacio}></Text>
           <Text style={estilos.textoVacioSub}>Sin presupuestos aún</Text>
           <Text style={estilos.textoVacioHint}>Toca "+ Nuevo" para crear uno</Text>
         </View>

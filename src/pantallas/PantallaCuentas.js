@@ -6,6 +6,7 @@ import {
 import { useAuth } from '../contexto/ContextoAuth';
 import { escucharCuentas, crearCuenta, eliminarCuenta } from '../firebase/cuentas';
 import { escucharTransacciones } from '../firebase/transacciones';
+import { validarNombre, mensajeErrorFirestore } from '../utils/errores';
 
 const TIPOS_CUENTA = ['Efectivo', 'Tarjeta débito', 'Tarjeta crédito', 'Cuenta banco', 'Ahorros', 'Otro'];
 
@@ -35,23 +36,24 @@ export default function PantallaCuentas() {
       }, 0);
   };
 
-  const manejarCrearCuenta = async () => {
-    if (!nombreCuenta.trim()) {
-      Alert.alert('Error', 'Por favor ingresa un nombre para la cuenta');
-      return;
-    }
-    try {
-      setCargando(true);
-      await crearCuenta(usuario.uid, nombreCuenta.trim(), tipoSeleccionado);
-      setNombreCuenta('');
-      setTipoSeleccionado('Efectivo');
-      setModalVisible(false);
-    } catch (error) {
-      Alert.alert('Error', 'No se pudo crear la cuenta');
-    } finally {
-      setCargando(false);
-    }
-  };
+const manejarCrearCuenta = async () => {
+  const errorNombre = validarNombre(nombreCuenta, 'El nombre de la cuenta');
+  if (errorNombre) {
+    Alert.alert('Nombre inválido', errorNombre);
+    return;
+  }
+  try {
+    setCargando(true);
+    await crearCuenta(usuario.uid, nombreCuenta.trim(), tipoSeleccionado);
+    setNombreCuenta('');
+    setTipoSeleccionado('Efectivo');
+    setModalVisible(false);
+  } catch (error) {
+    Alert.alert('Error', mensajeErrorFirestore(error));
+  } finally {
+    setCargando(false);
+  }
+};
 
   const manejarEliminarCuenta = (cuenta) => {
     Alert.alert(
@@ -146,7 +148,7 @@ export default function PantallaCuentas() {
       {/* Lista de cuentas */}
       {cuentas.length === 0 ? (
         <View style={estilos.vacio}>
-          <Text style={estilos.textoVacio}>🏦</Text>
+          <Text style={estilos.textoVacio}></Text>
           <Text style={estilos.textoVacioSub}>No tienes cuentas aún</Text>
           <Text style={estilos.textoVacioHint}>Toca "+ Nueva" para crear una</Text>
         </View>

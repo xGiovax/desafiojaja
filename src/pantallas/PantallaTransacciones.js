@@ -10,7 +10,7 @@ import {
   editarTransaccion, eliminarTransaccion
 } from '../firebase/transacciones';
 import { escucharCuentas } from '../firebase/cuentas';
-
+import { validarMonto, mensajeErrorFirestore } from '../utils/errores';
 const CATEGORIAS_GASTO = [
   '🍔 Comida', '🚗 Transporte', '🏠 Hogar', '💊 Salud',
   '🎮 Entretenimiento', '👕 Ropa', '📚 Educación', '💡 Servicios', '📦 Otro'
@@ -79,44 +79,44 @@ export default function PantallaTransacciones() {
     setModalVisible(true);
   };
 
-  const manejarGuardar = async () => {
-    if (!transaccionActual.monto || isNaN(transaccionActual.monto)) {
-      Alert.alert('Error', 'Ingresa un monto válido');
-      return;
+ const manejarGuardar = async () => {
+  // Validar monto
+  const errorMonto = validarMonto(transaccionActual.monto);
+  if (errorMonto) {
+    Alert.alert('Monto inválido', errorMonto);
+    return;
+  }
+  if (!transaccionActual.cuentaId) {
+    Alert.alert('Cuenta requerida', 'Por favor selecciona una cuenta.');
+    return;
+  }
+  if (!transaccionActual.categoria) {
+    Alert.alert('Categoría requerida', 'Por favor selecciona una categoría.');
+    return;
+  }
+  try {
+    setCargando(true);
+    const datos = {
+      monto: parseFloat(transaccionActual.monto),
+      tipo: transaccionActual.tipo,
+      categoria: transaccionActual.categoria,
+      cuentaId: transaccionActual.cuentaId,
+      descripcion: transaccionActual.descripcion,
+    };
+    if (editando) {
+      await editarTransaccion(editando, datos);
+    } else {
+      await crearTransaccion(usuario.uid, datos);
     }
-    if (!transaccionActual.cuentaId) {
-      Alert.alert('Error', 'Selecciona una cuenta');
-      return;
-    }
-    if (!transaccionActual.categoria) {
-      Alert.alert('Error', 'Selecciona una categoría');
-      return;
-    }
-
-    try {
-      setCargando(true);
-      const datos = {
-        monto: parseFloat(transaccionActual.monto),
-        tipo: transaccionActual.tipo,
-        categoria: transaccionActual.categoria,
-        cuentaId: transaccionActual.cuentaId,
-        descripcion: transaccionActual.descripcion,
-      };
-
-      if (editando) {
-        await editarTransaccion(editando, datos);
-      } else {
-        await crearTransaccion(usuario.uid, datos);
-      }
-      setModalVisible(false);
-      setTransaccionActual(TRANSACCION_VACIA);
-      setEditando(null);
-    } catch (error) {
-      Alert.alert('Error', 'No se pudo guardar la transacción');
-    } finally {
-      setCargando(false);
-    }
-  };
+    setModalVisible(false);
+    setTransaccionActual(TRANSACCION_VACIA);
+    setEditando(null);
+  } catch (error) {
+    Alert.alert('Error', mensajeErrorFirestore(error));
+  } finally {
+    setCargando(false);
+  }
+};
 
   const manejarEliminar = (transaccion) => {
     Alert.alert(
@@ -252,7 +252,7 @@ export default function PantallaTransacciones() {
       {/* Lista */}
       {transaccionesFiltradas.length === 0 ? (
         <View style={estilos.vacio}>
-          <Text style={estilos.textoVacio}>💸</Text>
+          <Text style={estilos.textoVacio}></Text>
           <Text style={estilos.textoVacioSub}>No hay transacciones</Text>
           <Text style={estilos.textoVacioHint}>Toca "+ Nueva" para agregar una</Text>
         </View>
@@ -308,7 +308,7 @@ export default function PantallaTransacciones() {
                       estilos.textoTipo,
                       transaccionActual.tipo === tipo && estilos.textoTipoActivo
                     ]}>
-                      {tipo === 'gasto' ? '📤 Gasto' : '📥 Ingreso'}
+                      {tipo === 'gasto' ? ' Gasto' : ' Ingreso'}
                     </Text>
                   </TouchableOpacity>
                 ))}
