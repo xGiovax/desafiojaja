@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Catálogo Interactivo - Autoconsulta</title>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/styles.css">
+    
+
+</head>
+<body>
+
+    <header class="barra-superior">
+        <div class="logo">
+            <h2>La Tienda</h2>
+        </div>
+        <div class="buscador">
+            <input type="text" id="input-busqueda" placeholder="Buscar zapatos, ropa...">
+            <button><i class="fas fa-search"></i></button>
+        </div>
+    </header>
+
+    <nav class="barra-categorias" id="contenedor-categorias">
+        <button class="btn-categoria activo" onclick="filtrarCategoria('todos')">Todos</button>
+        <button class="btn-categoria" onclick="filtrarCategoria('zapatos')">Zapatos</button>
+        <button class="btn-categoria" onclick="filtrarCategoria('ropa')">Ropa</button>
+        <button class="btn-categoria" onclick="filtrarCategoria('accesorios')">Accesorios</button>
+    </nav>
+
+    <main class="area-catalogo">
+        <div id="contenedor-catalogo" class="grid-productos">
+            </div>
+    </main>
+
+    <div class="carrito-flotante" onclick="abrirResumenPedido()">
+        <div class="icono-carrito">
+            <i class="fas fa-shopping-cart"></i>
+            <span id="contador-carrito" class="badge">0</span>
+        </div>
+        <div class="texto-carrito">Ver Mi Pedido</div>
+    </div>
+
+    <div id="modal-carrito" class="modal oculto">
+        <div class="contenido-modal">
+            <div class="encabezado-modal">
+                <h2>Mi Carrito</h2>
+                <button class="btn-cerrar" onclick="cerrarResumenPedido()"><i class="fas fa-times"></i></button>
+            </div>
+            
+            <div id="lista-carrito" class="cuerpo-modal">
+                <p class="mensaje-vacio">Tu carrito está vacío.</p>
+            </div>
+            
+            <div class="pie-modal">
+                <div class="total-pedido">
+                    <span>Total:</span>
+                    <span id="monto-total">$0.00</span>
+                </div>
+                <button class="btn-finalizar" onclick="finalizarPedido()">Finalizar y Crear Ticket</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/catalogo.js"></script>
+    
+</body>
+</html>
